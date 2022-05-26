@@ -1,0 +1,1 @@
+//In that script AI units' movement commands will be created.
