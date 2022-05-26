@@ -1,1 +1,47 @@
 //In that script AI units' movement commands will be created.
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace AI.Movement
+{
+    public class TankMovement : MonoBehaviour
+    {
+        [SerializeField] float tankSpeed = 1.0f;
+        [SerializeField] float pointAccuracy = 1.0f;
+        [SerializeField] float rotationSpeed = 1f;
+
+        [SerializeField] PatrolPath patrolPath;
+
+        [SerializeField] int currentWaypoint = 0;
+
+        private void LateUpdate()
+        {
+            Vector3 lookAtWaypoint = new Vector3(NextWP().x, TankTransform().position.y, NextWP().z);
+            Vector3 direction = lookAtWaypoint - TankTransform().position;
+            TankTransform().rotation = Quaternion.Slerp(TankTransform().rotation, Quaternion.LookRotation(direction), Time.deltaTime * rotationSpeed);
+
+            if (direction.magnitude < pointAccuracy)
+            {
+                currentWaypoint++;
+                if (currentWaypoint >= patrolPath.transform.childCount)
+                {
+        	        currentWaypoint = 0;
+            	}
+            }
+            TankTransform().Translate(0, 0, tankSpeed * Time.deltaTime);
+        }
+
+        private Vector3 NextWP()
+        {
+            return patrolPath.GetWaypointPosition(currentWaypoint);
+        }
+
+        private Transform TankTransform()
+        {
+            return this.transform;
+        }
+    }
+}
